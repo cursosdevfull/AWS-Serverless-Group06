@@ -1,9 +1,12 @@
-import sender from "@functions/sender";
+import authorizer from '@functions/authorizer';
+import client from '@functions/client';
+import login from '@functions/login';
+import register from '@functions/register';
 
 import type { AWS } from "@serverless/typescript";
 
 const serverlessConfiguration: AWS = {
-  service: "origen",
+  service: "authorizer",
   frameworkVersion: "3",
   plugins: ["serverless-esbuild"],
   provider: {
@@ -16,22 +19,22 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
-      SQS_QUEUE_URL: "${cf:origen-dev.SQSMyQueueURL}",
+      JWT_SECRET: "83e4ad7e-071c-4782-ab0a-24234a1d3d2f",
     },
     iam: {
       role: {
         statements: [
           {
-            Action: ["sqs:SendMessage"],
             Effect: "Allow",
-            Resource: "arn:aws:sqs:*:*:*",
+            Action: ["dynamodb:*"],
+            Resource: "*",
           },
         ],
       },
     },
   },
   // import the function via paths
-  functions: { sender },
+  functions: { register, login, client, authorizer },
   package: { individually: true },
   custom: {
     esbuild: {
@@ -47,25 +50,24 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      SQSMyQueue: {
-        Type: "AWS::SQS::Queue",
+      DynamoDBTable: {
+        Type: "AWS::DynamoDB::Table",
         Properties: {
-          QueueName: "origen03-queue",
+          TableName: "users",
+          BillingMode: "PAY_PER_REQUEST",
+          AttributeDefinitions: [
+            {
+              AttributeName: "email",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "email",
+              KeyType: "HASH",
+            },
+          ],
         },
-      },
-      SQSEmailQueue: {
-        Type: "AWS::SQS::Queue",
-        Properties: {
-          QueueName: "origen03-queue-email",
-        },
-      },
-    },
-    Outputs: {
-      SQSMyQueueURL: {
-        Value: { Ref: "SQSMyQueue" },
-      },
-      SQSEmailQueueURL: {
-        Value: { Ref: "SQSEmailQueue" },
       },
     },
   },

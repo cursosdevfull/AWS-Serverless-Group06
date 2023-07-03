@@ -1,5 +1,5 @@
 {
-  "name": "destino",
+  "name": "authorizer_cognito",
   "version": "1.0.0",
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
@@ -11,8 +11,7 @@
   },
   "dependencies": {
     "@middy/core": "^3.4.0",
-    "@middy/http-json-body-parser": "^3.4.0",
-    "aws-sdk": "^2.1409.0"
+    "@middy/http-json-body-parser": "^3.4.0"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",

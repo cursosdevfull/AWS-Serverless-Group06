@@ -1,0 +1,10 @@
+@startuml
+participant Frontend as frontend
+participant Register as register
+participant Login as login
+frontend -> register: nombre, email, password
+register -> frontend: usuario registrado correctamente
+register --> frontend: usuario existente
+frontend -> login: email, password
+login -> frontend: tokens (accessToken, refreshToken)
+@enduml

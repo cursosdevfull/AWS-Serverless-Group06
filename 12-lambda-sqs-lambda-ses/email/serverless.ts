@@ -1,9 +1,9 @@
-import receive from "@functions/receive";
+import email from "@functions/email";
 
 import type { AWS } from "@serverless/typescript";
 
 const serverlessConfiguration: AWS = {
-  service: "destino",
+  service: "email",
   frameworkVersion: "3",
   plugins: ["serverless-esbuild"],
   provider: {
@@ -12,22 +12,26 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
-      SQS_QUEUE_URL: "${cf:origen-dev.SQSEmailQueueURL}",
     },
     iam: {
       role: {
         statements: [
           {
-            Action: ["sqs:SendMessage"],
             Effect: "Allow",
-            Resource: "arn:aws:sqs:*:*:*",
+            Action: "s3:GetObject",
+            Resource: "arn:aws:s3:::*/*",
+          },
+          {
+            Effect: "Allow",
+            Action: "ses:SendEmail",
+            Resource: "*",
           },
         ],
       },
     },
   },
   // import the function via paths
-  functions: { receive },
+  functions: { email },
   package: { individually: true },
   custom: {
     esbuild: {
