@@ -7,11 +7,26 @@ import { API } from 'aws-amplify';
   styleUrls: ['./client.component.css'],
 })
 export class ClientComponent implements OnInit {
+  init = {
+    headers: {
+      'Access-Control-Allow-Credentials': true,
+      'Access-Control-Allow-Headers':
+        'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
+      'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+      'Access-Control-Allow-Origin': '*',
+    },
+    response: true,
+  };
+
   constructor() {}
 
   ngOnInit(): void {}
 
   testHello() {
-    API.post('api', '/hello', {});
+    API.post('api', '/hello', this.init)
+      .then((response) => {
+        console.log('response: ', response);
+      })
+      .catch(console.log);
   }
 }
